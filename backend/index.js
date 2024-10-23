@@ -1,4 +1,4 @@
-import express from "express";
+import express, { request, response } from "express";
 import { PORT, MongoDBURL } from "./config.js";
 import mongoose from "mongoose";
 
@@ -11,6 +11,31 @@ app.get('/', (request, response) => {
 
 app.listen(PORT, () => {
     console.log(`App is listening to port: ${PORT}`);
+});
+
+//save book
+app.post('/books', async (request, response) =>{
+    try{    
+        if(
+            !request.body.title ||
+            !request.body.author ||
+            !request.body.publishYear
+        ) {
+            return response.status(400).send({
+                message: 'send all required field: title, author, publishYear',
+            });
+        }
+        const newBook = {
+            title: request.body.title,
+            author: request.body.author,
+            publishYear: request.body
+        };
+        const book = await book.create(newBook);
+        return response.status(201).send(book);
+    } catch (error){
+        console.log(error.message);
+        response.status(500).send({message:error.message});
+    }
 });
 
 mongoose
